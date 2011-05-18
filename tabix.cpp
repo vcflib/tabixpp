@@ -62,8 +62,8 @@ void Tabix::getHeader(string& header) {
 }
 
 bool Tabix::setRegion(string& region) {
-    ti_iter_destroy(iter);
     if (ti_parse_region(t->idx, region.c_str(), &tid, &beg, &end) == 0) {
+        ti_iter_destroy(iter);
         iter = ti_queryi(t, tid, beg, end);
         return true;
     } else return false;
