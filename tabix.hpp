@@ -19,6 +19,7 @@ public:
 
     string filename;
 
+    Tabix(void);
     Tabix(string& file);
     ~Tabix(void);
 

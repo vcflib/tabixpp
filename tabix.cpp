@@ -1,5 +1,7 @@
 #include "tabix.hpp"
 
+Tabix::Tabix(void) { }
+
 Tabix::Tabix(string& file) {
     filename = file;
     const char* cfilename = file.c_str();
