@@ -1,9 +1,10 @@
 CC=			gcc
+CPP= 		g++
 CFLAGS=		-g -Wall -O2 -fPIC #-m64 #-arch ppc
 DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
 LOBJS=		bgzf.o kstring.o knetfile.o index.o bedidx.o
 AOBJS=		main.o
-PROG=		tabix bgzip
+PROG=		tabix bgzip tabix++
 INCLUDES=
 SUBDIRS=	.
 LIBPATH=
@@ -39,6 +40,12 @@ libtabix.a:$(LOBJS)
 
 tabix:lib $(AOBJS)
 		$(CC) $(CFLAGS) -o $@ $(AOBJS) -lm $(LIBPATH) -lz -L. -ltabix
+
+tabix.o: tabix.hpp tabix.cpp
+		$(CPP) $(CFLAGS) -c tabix.cpp
+
+tabix++:lib tabix.o main.cpp
+		$(CPP) $(CFLAGS) -o $@ main.cpp tabix.o bgzf.o -lm $(LIBPATH) -lz -L. -ltabix
 
 bgzip:bgzip.o bgzf.o knetfile.o
 		$(CC) $(CFLAGS) -o $@ bgzip.o bgzf.o knetfile.o -lz
