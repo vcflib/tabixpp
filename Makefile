@@ -37,6 +37,7 @@ libtabix.1.dylib:$(LOBJS)
 
 libtabix.a:$(LOBJS)
 		$(AR) -cru $@ $(LOBJS)
+		ranlib $@
 
 tabix:lib $(AOBJS)
 		$(CC) $(CFLAGS) -o $@ $(AOBJS) -lm $(LIBPATH) -lz -L. -ltabix
