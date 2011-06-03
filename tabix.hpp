@@ -14,6 +14,7 @@ class Tabix {
     ti_iter_t iter;
     const ti_conf_t *idxconf;
     int tid, beg, end;
+    string firstline;
 
 public:
 

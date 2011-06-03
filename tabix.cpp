@@ -55,14 +55,19 @@ void Tabix::getHeader(string& header) {
     const char* s;
     int len;
     while ((s = ti_read(t, iter, &len)) != 0) {
-        if ((int)(*s) != idxconf->meta_char) break;
-        header += string(s);
-        header += "\n";
+        if ((int)(*s) != idxconf->meta_char) {
+            firstline = string(s); // stash this line
+            break;
+        } else {
+            header += string(s);
+            header += "\n";
+        }
     }
 }
 
 bool Tabix::setRegion(string& region) {
     if (ti_parse_region(t->idx, region.c_str(), &tid, &beg, &end) == 0) {
+        firstline.clear();
         ti_iter_destroy(iter);
         iter = ti_queryi(t, tid, beg, end);
         return true;
@@ -72,6 +77,11 @@ bool Tabix::setRegion(string& region) {
 bool Tabix::getNextLine(string& line) {
     const char* s;
     int len;
+    if (!firstline.empty()) {
+        line = firstline; // recovers line read if header is parsed
+        firstline.clear();
+        return true;
+    }
     if ((s = ti_read(t, iter, &len)) != 0) {
         line = string(s);
         return true;
