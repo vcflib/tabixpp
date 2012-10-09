@@ -40,13 +40,13 @@ libtabix.a:$(LOBJS)
 		ranlib $@
 
 tabix:lib $(AOBJS)
-		$(CC) $(CFLAGS) -o $@ $(AOBJS) -lm $(LIBPATH) -lz -L. -ltabix
+		$(CC) $(CFLAGS) -o $@ $(AOBJS) -lm $(LIBPATH) -L. -ltabix -lz
 
 tabix.o: tabix.hpp tabix.cpp
 		$(CPP) $(CFLAGS) -c tabix.cpp
 
 tabix++:lib tabix.o main.cpp
-		$(CPP) $(CFLAGS) -o $@ main.cpp tabix.o bgzf.o -lm $(LIBPATH) -lz -L. -ltabix
+		$(CPP) $(CFLAGS) -o $@ main.cpp tabix.o bgzf.o -lm $(LIBPATH) -L. -ltabix -lz
 
 bgzip:bgzip.o bgzf.o knetfile.o
 		$(CC) $(CFLAGS) -o $@ bgzip.o bgzf.o knetfile.o -lz
