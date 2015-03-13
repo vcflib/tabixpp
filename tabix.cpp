@@ -61,13 +61,16 @@ void Tabix::getHeader(string& header) {
     kstring_t str = {0,0,0};
     while ( hts_getline(fn, KS_SEP_LINE, &str) >= 0 ) {
         if ( !str.l || str.s[0]!=tbx->conf.meta_char ) {
-            cerr << str.s << endl;
             break;
         } else {
             header += string(str.s);
             header += "\n";
         }
     }
+    // set back to start
+    current_chrom = chroms.begin();
+    if (iter) tbx_itr_destroy(iter);
+    iter = tbx_itr_querys(tbx, current_chrom->c_str());
 }
 
 bool Tabix::setRegion(string& region) {
@@ -85,6 +88,7 @@ bool Tabix::getNextLine(string& line) {
             return true;
         } else return false;
     } else { // step through all sequences in the file
+        // we've never jumped, so read everything
         if (iter && tbx_itr_next(fn, tbx, iter, &str) >= 0) {
             line = string(str.s);
             return true;
