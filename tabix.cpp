@@ -59,6 +59,9 @@ void Tabix::getHeader(string& header) {
             header += "\n";
         }
     }
+    // reset iter
+    tbx_itr_destroy(iter);
+    iter = tbx_itr_queryi(idx, 0, 0, 0);
 }
 
 bool Tabix::setRegion(string& region) {
