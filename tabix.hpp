@@ -1,18 +1,21 @@
 #include <string>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include "bgzf.h"
-#include "tabix.h"
+#include "htslib/bgzf.h"
+#include "htslib/tbx.h"
+#include "htslib/kseq.h"
 #include <iostream>
+#include <cstring>
 
 
 using namespace std;
 
 class Tabix {
 
-    tabix_t *t;
-    ti_iter_t iter;
-    const ti_conf_t *idxconf;
+    htsFile* fn;
+    tbx_t* idx;
+    hts_itr_t* iter;
+    const tbx_conf_t *idxconf;
     int tid, beg, end;
     string firstline;
 

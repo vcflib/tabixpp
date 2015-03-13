@@ -8,7 +8,7 @@ Tabix::Tabix(string& file) {
     struct stat stat_tbi,stat_vcf;
     char *fnidx = (char*) calloc(strlen(cfilename) + 5, 1);
     strcat(strcpy(fnidx, cfilename), ".tbi");
-    if ( bgzf_check_bgzf(cfilename)!=1 )
+    if ( bgzf_is_bgzf(cfilename)!=1 )
     {
         cerr << "[tabix++] was bgzip used to compress this file? " << file << endl;
         free(fnidx);
@@ -25,65 +25,57 @@ Tabix::Tabix(string& file) {
     }
     free(fnidx);
 
-    if ((t = ti_open(cfilename, 0)) == 0) {
+    if ((fn = hts_open(cfilename, "r")) == 0) {
         cerr << "[tabix++] fail to open the data file." << endl;
         exit(1);
     }
 
-    if (ti_lazy_index_load(t) < 0) {
+    if ((idx = tbx_index_load(cfilename)) == NULL) {
         cerr << "[tabix++] failed to load the index file." << endl;
         exit(1);
     }
 
-    idxconf = ti_get_conf(t->idx);
+    idxconf = &tbx_conf_vcf;
 
     // set up the iterator, defaults to the beginning
-    iter = ti_query(t, 0, 0, 0);
+    iter = tbx_itr_queryi(idx, 0, 0, 0);
 
 }
 
 Tabix::~Tabix(void) {
-    ti_iter_destroy(iter);
-    ti_close(t);
+    tbx_itr_destroy(iter);
+    tbx_destroy(idx);
 }
 
 
 void Tabix::getHeader(string& header) {
     header.clear();
-    ti_iter_destroy(iter);
-    iter = ti_query(t, 0, 0, 0);
-    const char* s;
-    int len;
-    while ((s = ti_read(t, iter, &len)) != 0) {
-        if ((int)(*s) != idxconf->meta_char) {
-            firstline = string(s); // stash this line
+    kstring_t str = {0,0,0};
+    while ( hts_getline(fn, KS_SEP_LINE, &str) >= 0 ) {
+        if ( !str.l || str.s[0]!=idx->conf.meta_char ) {
             break;
         } else {
-            header += string(s);
+            header += string(str.s);
             header += "\n";
         }
     }
 }
 
 bool Tabix::setRegion(string& region) {
-    if (ti_parse_region(t->idx, region.c_str(), &tid, &beg, &end) == 0) {
-        firstline.clear();
-        ti_iter_destroy(iter);
-        iter = ti_queryi(t, tid, beg, end);
-        return true;
-    } else return false;
+    tbx_itr_destroy(iter);;
+    iter = tbx_itr_querys(idx, region.c_str());
+    return true;
 }
 
 bool Tabix::getNextLine(string& line) {
-    const char* s;
-    int len;
     if (!firstline.empty()) {
         line = firstline; // recovers line read if header is parsed
         firstline.clear();
         return true;
     }
-    if ((s = ti_read(t, iter, &len)) != 0) {
-        line = string(s);
+    kstring_t str = {0,0,0};
+    if (iter && tbx_itr_next(fn, idx, iter, &str) >= 0) {
+        line = string(str.s);
         return true;
     } else return false;
 }
