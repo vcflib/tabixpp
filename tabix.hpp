@@ -6,6 +6,7 @@
 #include "htslib/kseq.h"
 #include <iostream>
 #include <cstring>
+#include <vector>
 
 
 using namespace std;
@@ -13,15 +14,18 @@ using namespace std;
 class Tabix {
 
     htsFile* fn;
-    tbx_t* idx;
+    tbx_t* tbx;
     hts_itr_t* iter;
     const tbx_conf_t *idxconf;
     int tid, beg, end;
     string firstline;
+    bool has_jumped;
+    vector<string>::iterator current_chrom;
 
 public:
 
     string filename;
+    vector<string> chroms;
 
     Tabix(void);
     Tabix(string& file);

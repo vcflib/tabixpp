@@ -3,6 +3,7 @@
 Tabix::Tabix(void) { }
 
 Tabix::Tabix(string& file) {
+    has_jumped = false;
     filename = file;
     const char* cfilename = file.c_str();
     struct stat stat_tbi,stat_vcf;
@@ -30,55 +31,76 @@ Tabix::Tabix(string& file) {
         exit(1);
     }
 
-    if ((idx = tbx_index_load(cfilename)) == NULL) {
+    if ((tbx = tbx_index_load(cfilename)) == NULL) {
         cerr << "[tabix++] failed to load the index file." << endl;
         exit(1);
     }
 
+    int nseq;
+    const char** seq = tbx_seqnames(tbx, &nseq);
+    for (int i=0; i<nseq; i++) {
+        chroms.push_back(seq[i]);
+    }
+    free(seq);
+
     idxconf = &tbx_conf_vcf;
 
     // set up the iterator, defaults to the beginning
-    iter = tbx_itr_queryi(idx, 0, 0, 0);
+    current_chrom = chroms.begin();
+    iter = tbx_itr_querys(tbx, current_chrom->c_str());
 
 }
 
 Tabix::~Tabix(void) {
     tbx_itr_destroy(iter);
-    tbx_destroy(idx);
+    tbx_destroy(tbx);
 }
-
 
 void Tabix::getHeader(string& header) {
     header.clear();
     kstring_t str = {0,0,0};
     while ( hts_getline(fn, KS_SEP_LINE, &str) >= 0 ) {
-        if ( !str.l || str.s[0]!=idx->conf.meta_char ) {
+        if ( !str.l || str.s[0]!=tbx->conf.meta_char ) {
+            cerr << str.s << endl;
             break;
         } else {
             header += string(str.s);
             header += "\n";
         }
     }
-    // reset iter
-    tbx_itr_destroy(iter);
-    iter = tbx_itr_queryi(idx, 0, 0, 0);
 }
 
 bool Tabix::setRegion(string& region) {
-    tbx_itr_destroy(iter);;
-    iter = tbx_itr_querys(idx, region.c_str());
+    tbx_itr_destroy(iter);
+    iter = tbx_itr_querys(tbx, region.c_str());
+    has_jumped = true;
     return true;
 }
 
 bool Tabix::getNextLine(string& line) {
-    if (!firstline.empty()) {
-        line = firstline; // recovers line read if header is parsed
-        firstline.clear();
-        return true;
-    }
     kstring_t str = {0,0,0};
-    if (iter && tbx_itr_next(fn, idx, iter, &str) >= 0) {
-        line = string(str.s);
-        return true;
-    } else return false;
+    if (has_jumped) {
+        if (iter && tbx_itr_next(fn, tbx, iter, &str) >= 0) {
+            line = string(str.s);
+            return true;
+        } else return false;
+    } else { // step through all sequences in the file
+        if (iter && tbx_itr_next(fn, tbx, iter, &str) >= 0) {
+            line = string(str.s);
+            return true;
+        } else {
+            ++current_chrom;
+            while (current_chrom != chroms.end()) {
+                tbx_itr_destroy(iter);
+                iter = tbx_itr_querys(tbx, current_chrom->c_str());
+                if (iter && tbx_itr_next(fn, tbx, iter, &str) >= 0) {
+                    line = string(str.s);
+                    return true;
+                } else {
+                    ++current_chrom;
+                }
+            }
+            return false;
+        }
+    }
 }
