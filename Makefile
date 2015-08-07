@@ -24,22 +24,13 @@ all-recur lib-recur clean-recur cleanlocal-recur install-recur:
 
 all:$(PROG)
 
-lib:libtabix.a
-
-libtabix.a:$(LOBJS)
-		$(AR) -cru $@ $(LOBJS)
-		ranlib $@
-
-tabix:lib $(AOBJS)
-		$(CC) $(CFLAGS) -o $@ $(AOBJS) -lm $(LIBPATH) -L. -lhts -lz
-
 tabix.o: htslib/htslib/bgzf.h htslib/htslib/tbx.h tabix.cpp tabix.hpp
 		$(CPP) $(CFLAGS) -c tabix.cpp $(INCLUDES)
 
 htslib/libhts.a:
 		cd htslib && $(MAKE) lib-static
 
-tabix++:lib tabix.o main.cpp htslib/libhts.a
+tabix++:tabix.o main.cpp htslib/libhts.a
 		$(CPP) $(CFLAGS) -o $@ main.cpp tabix.o $(INCLUDES) $(LIBPATH) -lhts -lpthread -lm -lz
 
 cleanlocal:
