@@ -46,9 +46,15 @@ Tabix::Tabix(string& file) {
     idxconf = &tbx_conf_vcf;
 
     // set up the iterator, defaults to the beginning
-    current_chrom = chroms.begin();
-    iter = tbx_itr_querys(tbx, current_chrom->c_str());
-
+    if (nseq == 0){
+        // the vcf file contains only the header according 
+        // to the index
+        iter = NULL;
+        current_chrom = chroms.end();
+    }else{
+        current_chrom = chroms.begin();
+        iter = tbx_itr_querys(tbx, current_chrom->c_str());
+    } 
 }
 
 Tabix::~Tabix(void) {
@@ -68,9 +74,11 @@ void Tabix::getHeader(string& header) {
         }
     }
     // set back to start
-    current_chrom = chroms.begin();
-    if (iter) tbx_itr_destroy(iter);
-    iter = tbx_itr_querys(tbx, current_chrom->c_str());
+    if (iter != NULL){
+        current_chrom = chroms.begin();
+        if (iter) tbx_itr_destroy(iter);
+        iter = tbx_itr_querys(tbx, current_chrom->c_str());
+    }
 }
 
 bool Tabix::setRegion(string& region) {
@@ -82,6 +90,9 @@ bool Tabix::setRegion(string& region) {
 
 bool Tabix::getNextLine(string& line) {
     kstring_t str = {0,0,0};
+    if (iter==NULL){
+        return false;
+    }
     if (has_jumped) {
         if (iter && tbx_itr_next(fn, tbx, iter, &str) >= 0) {
             line = string(str.s);
