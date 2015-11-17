@@ -4,11 +4,12 @@
 CC?=		gcc
 CXX?= 		g++
 CXXFLAGS?=	-g -Wall -O2 -fPIC #-m64 #-arch ppc
+INCLUDES?=	-Ihtslib
+HTS_HEADERS?=	htslib/htslib/bgzf.h htslib/htslib/tbx.h
+HTS_LIB?=	htslib/libhts.a
 
 DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
 PROG=		tabix++
-INCLUDES=	-Ihtslib
-HTS_HEADERS?=	htslib/htslib/bgzf.h htslib/htslib/tbx.h
 SUBDIRS=.
 LIBPATH=	-L. -Lhtslib
 
@@ -36,7 +37,7 @@ tabix.o: $(HTS_HEADERS) tabix.cpp tabix.hpp
 htslib/libhts.a:
 	cd htslib && $(MAKE) lib-static
 
-tabix++: tabix.o main.cpp htslib/libhts.a
+tabix++: tabix.o main.cpp $(HTSLIB)
 	$(CXX) $(CXXFLAGS) -o $@ main.cpp tabix.o $(INCLUDES) $(LIBPATH) \
 		-lhts -lpthread -lm -lz
 
