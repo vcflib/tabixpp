@@ -1,6 +1,6 @@
 
-# Use ?= for standardized variables to allow override from the env or
-# command-line.
+# Use ?= to allow override from the env or command-line.
+
 CC?=		gcc
 CXX?= 		g++
 CXXFLAGS?=	-g -Wall -O2 -fPIC #-m64 #-arch ppc
@@ -8,13 +8,14 @@ CXXFLAGS?=	-g -Wall -O2 -fPIC #-m64 #-arch ppc
 DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
 PROG=		tabix++
 INCLUDES=	-Ihtslib
+HTS_HEADERS?=	htslib/htslib/bgzf.h htslib/htslib/tbx.h
 SUBDIRS=.
 LIBPATH=	-L. -Lhtslib
 
 .SUFFIXES:.c .o
 
 .c.o:
-		$(CC) -c $(CXXFLAGS) $(DFLAGS) $(INCLUDES) $< -o $@
+	$(CC) -c $(CXXFLAGS) $(DFLAGS) $(INCLUDES) $< -o $@
 
 all-recur lib-recur clean-recur cleanlocal-recur install-recur:
 	@target=`echo $@ | sed s/-recur//`; \
@@ -29,13 +30,13 @@ all-recur lib-recur clean-recur cleanlocal-recur install-recur:
 
 all:	$(PROG)
 
-tabix.o:	htslib/htslib/bgzf.h htslib/htslib/tbx.h tabix.cpp tabix.hpp
-		$(CXX) $(CXXFLAGS) -c tabix.cpp $(INCLUDES)
+tabix.o: $(HTS_HEADERS) tabix.cpp tabix.hpp
+	$(CXX) $(CXXFLAGS) -c tabix.cpp $(INCLUDES)
 
 htslib/libhts.a:
 	cd htslib && $(MAKE) lib-static
 
-tabix++:	tabix.o main.cpp htslib/libhts.a
+tabix++: tabix.o main.cpp htslib/libhts.a
 	$(CXX) $(CXXFLAGS) -o $@ main.cpp tabix.o $(INCLUDES) $(LIBPATH) \
 		-lhts -lpthread -lm -lz
 
