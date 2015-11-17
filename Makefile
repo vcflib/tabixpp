@@ -37,7 +37,7 @@ tabix.o: $(HTS_HEADERS) tabix.cpp tabix.hpp
 htslib/libhts.a:
 	cd htslib && $(MAKE) lib-static
 
-tabix++: tabix.o main.cpp $(HTSLIB)
+tabix++: tabix.o main.cpp $(HTS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ main.cpp tabix.o $(INCLUDES) $(LIBPATH) \
 		-lhts -lpthread -lm -lz
 
