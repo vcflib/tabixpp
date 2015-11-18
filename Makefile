@@ -55,10 +55,10 @@ tabix++: $(OBJS) main.cpp $(HTS_LIB)
 
 install: all
 	$(MKDIR) $(DESTDIR)$(PREFIX)/bin
-	$(MKDIR) $(DESTDIR)$(PREFIX)/include/tabixpp
+	$(MKDIR) $(DESTDIR)$(PREFIX)/include
 	$(MKDIR) $(DESTDIR)$(PREFIX)/lib
 	$(INSTALL) $(BIN) $(DESTDIR)$(PREFIX)/bin
-	$(INSTALL) *.hpp $(DESTDIR)$(PREFIX)/include/tabixpp
+	$(INSTALL) *.hpp $(DESTDIR)$(PREFIX)/include
 	$(INSTALL) $(LIB) $(DESTDIR)$(PREFIX)/lib
 
 install-strip: install
