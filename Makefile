@@ -1,13 +1,14 @@
 
 # Use ?= to allow override from the env or command-line.
 
-CC?=		gcc
-CXX?= 		g++
-CXXFLAGS?=	-g -Wall -O2 -fPIC #-m64 #-arch ppc
-INCLUDES?=	-Ihtslib
-HTS_HEADERS?=	htslib/htslib/bgzf.h htslib/htslib/tbx.h
-HTS_LIB?=	htslib/libhts.a
-LIBPATH?=	-L. -Lhtslib
+CC ?=		gcc
+CXX ?= 		g++
+CXXFLAGS ?=	-g -Wall -O2 -fPIC #-m64 #-arch ppc
+INCLUDES ?=	-Ihtslib
+HTS_HEADERS ?=	htslib/htslib/bgzf.h htslib/htslib/tbx.h
+HTS_LIB ?=	htslib/libhts.a
+LIBPATH ?=	-L. -Lhtslib
+AR ?=		ar
 
 DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
 PROG=		tabix++
