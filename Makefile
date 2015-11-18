@@ -1,19 +1,26 @@
 
 # Use ?= to allow override from the env or command-line.
 
-CC ?=		gcc
-CXX ?= 		g++
+CC ?=		cc
+CXX ?= 		c++
 CXXFLAGS ?=	-g -Wall -O2 -fPIC #-m64 #-arch ppc
 INCLUDES ?=	-Ihtslib
 HTS_HEADERS ?=	htslib/htslib/bgzf.h htslib/htslib/tbx.h
 HTS_LIB ?=	htslib/libhts.a
 LIBPATH ?=	-L. -Lhtslib
+
+DESTDIR ?=	stage
+PREFIX ?=	/usr/local
+STRIP ?=	strip
+INSTALL ?=	install -c
+MKDIR ?=	mkdir -p
 AR ?=		ar
 
-DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
-PROG=		tabix++
-LIB=		libtabix.a
-SUBDIRS=.
+DFLAGS =	-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
+BIN =		tabix++
+LIB =		libtabix.a
+OBJS =		tabix.o
+SUBDIRS =	.
 
 .SUFFIXES:.c .o
 
@@ -31,7 +38,7 @@ all-recur lib-recur clean-recur cleanlocal-recur install-recur:
 		cd $$wdir; \
 	done;
 
-all:	$(PROG) $(LIB)
+all:	$(BIN) $(LIB)
 
 tabix.o: $(HTS_HEADERS) tabix.cpp tabix.hpp
 	$(CXX) $(CXXFLAGS) -c tabix.cpp $(INCLUDES)
@@ -39,16 +46,26 @@ tabix.o: $(HTS_HEADERS) tabix.cpp tabix.hpp
 htslib/libhts.a:
 	cd htslib && $(MAKE) lib-static
 
-libtabix.a:
-	$(AR) rs libtabix.a tabix.o
+$(LIB): $(OBJS)
+	$(AR) rs $(LIB) $(OBJS)
 
-tabix++: tabix.o main.cpp $(HTS_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ main.cpp tabix.o $(INCLUDES) $(LIBPATH) \
+tabix++: $(OBJS) main.cpp $(HTS_LIB)
+	$(CXX) $(CXXFLAGS) -o $@ main.cpp $(OBJS) $(INCLUDES) $(LIBPATH) \
 		-lhts -lpthread -lm -lz
 
+install: all
+	$(MKDIR) $(DESTDIR)$(PREFIX)/bin
+	$(MKDIR) $(DESTDIR)$(PREFIX)/lib
+	$(INSTALL) $(BIN) $(DESTDIR)$(PREFIX)/bin
+	$(INSTALL) $(LIB) $(DESTDIR)$(PREFIX)/lib
+
+install-strip: install
+	$(STRIP) $(DESTDIR)$(PREFIX)/bin/$(BIN)
+
 cleanlocal:
-	rm -fr gmon.out *.o a.out *.dSYM $(PROG) *~ *.a tabix.aux tabix.log \
+	rm -rf $(BIN) $(LIB) $(OBJS) $(DESTDIR)
+	rm -fr gmon.out *.o a.out *.dSYM $(BIN) *~ *.a tabix.aux tabix.log \
 		tabix.pdf *.class libtabix.*.dylib libtabix.so*
 	cd htslib && $(MAKE) clean
 
-clean:cleanlocal-recur
+clean:	cleanlocal-recur
