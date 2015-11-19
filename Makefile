@@ -64,7 +64,7 @@ install: all
 	$(MKDIR) $(DESTDIR)$(PREFIX)/lib
 	$(INSTALL) $(BIN) $(DESTDIR)$(PREFIX)/bin
 	$(INSTALL) *.hpp $(DESTDIR)$(PREFIX)/include
-	$(INSTALL) $(LIB) $(DESTDIR)$(PREFIX)/lib
+	$(INSTALL) $(LIB) $(SLIB) $(DESTDIR)$(PREFIX)/lib
 
 install-strip: install
 	$(STRIP) $(DESTDIR)$(PREFIX)/bin/$(BIN)
