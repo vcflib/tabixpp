@@ -19,6 +19,7 @@ AR ?=		ar
 DFLAGS =	-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
 BIN =		tabix++
 LIB =		libtabix.a
+SLIB =		libtabix.so
 OBJS =		tabix.o
 SUBDIRS =	.
 
@@ -38,7 +39,7 @@ all-recur lib-recur clean-recur cleanlocal-recur install-recur:
 		cd $$wdir; \
 	done;
 
-all:	$(BIN) $(LIB)
+all:	$(BIN) $(LIB) $(SLIB)
 
 tabix.o: $(HTS_HEADERS) tabix.cpp tabix.hpp
 	$(CXX) $(CXXFLAGS) -c tabix.cpp $(INCLUDES)
@@ -48,6 +49,9 @@ htslib/libhts.a:
 
 $(LIB): $(OBJS)
 	$(AR) rs $(LIB) $(OBJS)
+
+$(SLIB): $(OBJS)
+	$(CXX) -shared -Wl,-soname,$(SLIB).1 -o $(SLIB) $(OBJS)
 
 tabix++: $(OBJS) main.cpp $(HTS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ main.cpp $(OBJS) $(INCLUDES) $(LIBPATH) \
