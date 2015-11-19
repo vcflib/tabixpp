@@ -70,7 +70,7 @@ install-strip: install
 	$(STRIP) $(DESTDIR)$(PREFIX)/bin/$(BIN)
 
 cleanlocal:
-	rm -rf $(BIN) $(LIB) $(OBJS) $(DESTDIR)
+	rm -rf $(BIN) $(LIB) $(SLIB) $(OBJS) $(DESTDIR)
 	rm -fr gmon.out *.o a.out *.dSYM $(BIN) *~ *.a tabix.aux tabix.log \
 		tabix.pdf *.class libtabix.*.dylib libtabix.so*
 	cd htslib && $(MAKE) clean
