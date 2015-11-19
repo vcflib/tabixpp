@@ -3,7 +3,8 @@
 
 CC ?=		cc
 CXX ?= 		c++
-CXXFLAGS ?=	-g -Wall -O2 -fPIC #-m64 #-arch ppc
+CXXFLAGS ?=	-g -Wall -O2 #-m64 #-arch ppc
+CXXFLAGS +=	-fPIC
 INCLUDES ?=	-Ihtslib
 HTS_HEADERS ?=	htslib/htslib/bgzf.h htslib/htslib/tbx.h
 HTS_LIB ?=	htslib/libhts.a
