@@ -74,7 +74,7 @@ install: all
 	$(INSTALL) $(LIB) $(SLIB) $(DESTDIR)$(PREFIX)/lib
 
 install-strip: install
-	$(STRIP) $(DESTDIR)$(PREFIX)/bin/$(BIN)
+	$(STRIP) $(DESTDIR)$(PREFIX)/bin/$(BIN) $(DESTDIR)$(PREFIX)/lib/$(SLIB)
 
 cleanlocal:
 	rm -rf $(BIN) $(LIB) $(SLIB) $(OBJS) $(DESTDIR)
