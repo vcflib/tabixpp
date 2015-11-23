@@ -26,7 +26,8 @@ AR ?=		ar
 DFLAGS =	-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
 BIN =		tabix++
 LIB =		libtabix.a
-SLIB =		libtabix.so
+SOVERSION =	1
+SLIB =		libtabix.so.$(SOVERSION)
 OBJS =		tabix.o
 SUBDIRS =	.
 
@@ -58,7 +59,7 @@ $(LIB): $(OBJS)
 	$(AR) rs $(LIB) $(OBJS)
 
 $(SLIB): $(OBJS)
-	$(CXX) -shared -Wl,-soname,$(SLIB).1 -o $(SLIB) $(OBJS)
+	$(CXX) -shared -Wl,-soname,$(SLIB) -o $(SLIB) $(OBJS)
 
 tabix++: $(OBJS) main.cpp $(HTS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ main.cpp $(OBJS) $(INCLUDES) $(LIBPATH) \
@@ -78,7 +79,7 @@ install-strip: install
 cleanlocal:
 	rm -rf $(BIN) $(LIB) $(SLIB) $(OBJS) $(DESTDIR)
 	rm -fr gmon.out *.o a.out *.dSYM $(BIN) *~ *.a tabix.aux tabix.log \
-		tabix.pdf *.class libtabix.*.dylib libtabix.so*
+		tabix.pdf *.class libtabix.*.dylib
 	cd htslib && $(MAKE) clean
 
 clean:	cleanlocal-recur
