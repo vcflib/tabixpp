@@ -15,6 +15,7 @@ class Tabix {
 
     htsFile* fn;
     tbx_t* tbx;
+    kstring_t str;
     hts_itr_t* iter;
     const tbx_conf_t *idxconf;
     int tid, beg, end;
