@@ -5,6 +5,9 @@ Tabix::Tabix(void) { }
 Tabix::Tabix(string& file) {
     has_jumped = false;
     filename = file;
+    str.l = 0;
+    str.m = 0;
+    str.s = NULL;
     const char* cfilename = file.c_str();
     struct stat stat_tbi,stat_vcf;
     char *fnidx = (char*) calloc(strlen(cfilename) + 5, 1);
@@ -54,11 +57,11 @@ Tabix::Tabix(string& file) {
 Tabix::~Tabix(void) {
     tbx_itr_destroy(iter);
     tbx_destroy(tbx);
+    free(str.s);
 }
 
 void Tabix::getHeader(string& header) {
     header.clear();
-    kstring_t str = {0,0,0};
     while ( hts_getline(fn, KS_SEP_LINE, &str) >= 0 ) {
         if ( !str.l || str.s[0]!=tbx->conf.meta_char ) {
             break;
@@ -81,7 +84,6 @@ bool Tabix::setRegion(string& region) {
 }
 
 bool Tabix::getNextLine(string& line) {
-    kstring_t str = {0,0,0};
     if (has_jumped) {
         if (iter && tbx_itr_next(fn, tbx, iter, &str) >= 0) {
             line = string(str.s);
