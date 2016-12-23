@@ -1,9 +1,9 @@
 #include <string>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include "htslib/bgzf.h"
-#include "htslib/tbx.h"
-#include "htslib/kseq.h"
+#include <htslib/bgzf.h>
+#include <htslib/tbx.h>
+#include <htslib/kseq.h>
 #include <iostream>
 #include <cstring>
 #include <vector>
