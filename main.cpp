@@ -2,6 +2,7 @@
 #include <vector>
 
 using namespace std;
+using namespace tabixpp;
 
 int main(int argc, char** argv) {
 
