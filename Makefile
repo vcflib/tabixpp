@@ -11,6 +11,7 @@ LIBPATH?=	-L. -Lhtslib
 
 DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
 PROG=		tabix++
+STATICLIB=	libtabix++.a
 SUBDIRS=.
 
 .SUFFIXES:.c .o
@@ -29,7 +30,10 @@ all-recur lib-recur clean-recur cleanlocal-recur install-recur:
 		cd $$wdir; \
 	done;
 
-all:	$(PROG)
+all:	$(PROG) $(STATICLIB)
+
+$(STATICLIB): tabix.o
+	$(AR) -cru $@ tabix.o
 
 tabix.o: $(HTS_HEADERS) tabix.cpp tabix.hpp
 	$(CXX) $(CXXFLAGS) -c tabix.cpp $(INCLUDES)
@@ -42,7 +46,7 @@ tabix++: tabix.o main.cpp $(HTS_LIB)
 		-lhts -lpthread -lm -lz
 
 cleanlocal:
-	rm -fr gmon.out *.o a.out *.dSYM $(PROG) *~ *.a tabix.aux tabix.log \
+	rm -fr gmon.out *.o a.out *.dSYM $(PROG) $(STATICLIB) *~ *.a tabix.aux tabix.log \
 		tabix.pdf *.class libtabix.*.dylib libtabix.so*
 	cd htslib && $(MAKE) clean
 
