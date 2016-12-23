@@ -29,11 +29,11 @@ namespace tabixpp {
         std::vector<std::string> chroms;
 
         Tabix(void);
-        Tabix(std::string& file);
+        Tabix(const std::string& file);
         ~Tabix(void);
 
         void getHeader(std::string& header);
-        bool setRegion(std::string& region);
+        bool setRegion(const std::string& region);
         bool getNextLine(std::string& line);
     };
 }

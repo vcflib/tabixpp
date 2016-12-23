@@ -6,7 +6,7 @@ namespace tabixpp {
 
     Tabix::Tabix(void) { }
 
-    Tabix::Tabix(string& file) {
+    Tabix::Tabix(const string& file) {
         has_jumped = false;
         filename = file;
         str.l = 0;
@@ -80,7 +80,7 @@ namespace tabixpp {
         iter = tbx_itr_querys(tbx, current_chrom->c_str());
     }
 
-    bool Tabix::setRegion(string& region) {
+    bool Tabix::setRegion(const string& region) {
         tbx_itr_destroy(iter);
         iter = tbx_itr_querys(tbx, region.c_str());
         has_jumped = true;
