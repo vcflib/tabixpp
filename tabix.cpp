@@ -75,9 +75,7 @@ namespace tabixpp {
             }
         }
         // set back to start
-        current_chrom = chroms.begin();
-        if (iter) tbx_itr_destroy(iter);
-        iter = tbx_itr_querys(tbx, current_chrom->c_str());
+        reset();
     }
 
     bool Tabix::setRegion(const string& region) {
@@ -85,6 +83,13 @@ namespace tabixpp {
         iter = tbx_itr_querys(tbx, region.c_str());
         has_jumped = true;
         return true;
+    }
+
+    void Tabix::reset(void) {
+        current_chrom = chroms.begin();
+        if (iter) tbx_itr_destroy(iter);
+        iter = tbx_itr_querys(tbx, current_chrom->c_str());
+        has_jumped = true;
     }
 
     bool Tabix::getNextLine(string& line) {

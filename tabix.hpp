@@ -35,5 +35,6 @@ namespace tabixpp {
         void getHeader(std::string& header);
         bool setRegion(const std::string& region);
         bool getNextLine(std::string& line);
+        void reset(void);
     };
 }
