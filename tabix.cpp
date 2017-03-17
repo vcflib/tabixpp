@@ -50,7 +50,7 @@ Tabix::Tabix(string& file) {
 
     // set up the iterator, defaults to the beginning
     current_chrom = chroms.begin();
-    iter = tbx_itr_querys(tbx, current_chrom->c_str());
+    iter = tbx_itr_querys(tbx, (current_chrom != chroms.end() ? current_chrom->c_str() : ""));
 
 }
 
@@ -73,7 +73,7 @@ void Tabix::getHeader(string& header) {
     // set back to start
     current_chrom = chroms.begin();
     if (iter) tbx_itr_destroy(iter);
-    iter = tbx_itr_querys(tbx, current_chrom->c_str());
+    iter = tbx_itr_querys(tbx, (current_chrom != chroms.end() ? current_chrom->c_str() : ""));
 }
 
 bool Tabix::setRegion(string& region) {
@@ -95,8 +95,8 @@ bool Tabix::getNextLine(string& line) {
             line = string(str.s);
             return true;
         } else {
-            ++current_chrom;
-            while (current_chrom != chroms.end()) {
+            // While we aren't at the end, advance. While we're still not at the end...
+            while (current_chrom != chroms.end() && ++current_chrom != chroms.end()) {
                 tbx_itr_destroy(iter);
                 iter = tbx_itr_querys(tbx, current_chrom->c_str());
                 if (iter && tbx_itr_next(fn, tbx, iter, &str) >= 0) {
