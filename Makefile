@@ -39,7 +39,7 @@ htslib/libhts.a:
 
 tabix++: tabix.o main.cpp $(HTS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ main.cpp tabix.o $(INCLUDES) $(LIBPATH) \
-		-lhts -lpthread -lm -lz
+		-lhts -lpthread -lm -lbz2 -llzma -lz
 
 cleanlocal:
 	rm -fr gmon.out *.o a.out *.dSYM $(PROG) *~ *.a tabix.aux tabix.log \
