@@ -60,6 +60,10 @@ Tabix::~Tabix(void) {
     free(str.s);
 }
 
+const kstring_t * Tabix::getKstringPtr(){
+    return &str;
+}
+
 void Tabix::getHeader(string& header) {
     header.clear();
     while ( hts_getline(fn, KS_SEP_LINE, &str) >= 0 ) {
@@ -111,16 +115,18 @@ bool Tabix::getNextLine(string& line) {
     }
 }
 
-bool Tabix::getNextLineKS(kstring_t * line) {
+bool Tabix::getNextLineKS() {
     if (has_jumped) {
-        if (iter && tbx_itr_next(fn, tbx, iter, &str) >= 0) {
-            line = &str;
+        if (iter && 
+	    tbx_itr_next(fn, tbx, iter, &str) >= 0) {
+            //line = &str;
             return true;
-        } else return false;
+        } else 
+	    return false;
     } else { // step through all sequences in the file
         // we've never jumped, so read everything
         if (iter && tbx_itr_next(fn, tbx, iter, &str) >= 0) {
-            line = &str;
+            //line = &str;
             return true;
         } else {
             // While we aren't at the end, advance. While we're still not at the end...
@@ -128,7 +134,7 @@ bool Tabix::getNextLineKS(kstring_t * line) {
                 tbx_itr_destroy(iter);
                 iter = tbx_itr_querys(tbx, current_chrom->c_str());
                 if (iter && tbx_itr_next(fn, tbx, iter, &str) >= 0) {
-                    line = &str;
+                    //line = &str;
                     return true;
                 } else {
                     ++current_chrom;
