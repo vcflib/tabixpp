@@ -24,7 +24,6 @@ class Tabix {
     vector<string>::iterator current_chrom;
 
 public:
-
     string filename;
     vector<string> chroms;
 
@@ -32,8 +31,10 @@ public:
     Tabix(string& file);
     ~Tabix(void);
 
+    const kstring_t * getKstringPtr();
     void getHeader(string& header);
     bool setRegion(string& region);
     bool getNextLine(string& line);
+    bool getNextLineKS();
 
 };
