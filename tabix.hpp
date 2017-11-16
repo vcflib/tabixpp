@@ -35,5 +35,6 @@ public:
     void getHeader(string& header);
     bool setRegion(string& region);
     bool getNextLine(string& line);
+    bool getNextLineKS(kstring_t * line);
 
 };
