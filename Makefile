@@ -20,7 +20,7 @@ endif
 .SUFFIXES:.c .o
 
 .c.o:
-	$(CC) -c $(CXXFLAGS) $(DFLAGS) $(INCLUDES) $< -o $@
+	$(CC) $(CPPFLAGS) -c $(CXXFLAGS) $(DFLAGS) $(INCLUDES) $< -o $@
 
 all-recur lib-recur clean-recur cleanlocal-recur install-recur:
 	@target=`echo $@ | sed s/-recur//`; \
@@ -36,13 +36,13 @@ all-recur lib-recur clean-recur cleanlocal-recur install-recur:
 all:	$(PROG)
 
 tabix.o: $(HTS_HEADERS) tabix.cpp tabix.hpp
-	$(CXX) $(CXXFLAGS) -c tabix.cpp $(INCLUDES)
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c tabix.cpp $(INCLUDES)
 
 htslib/libhts.a:
 	cd htslib && $(MAKE) lib-static
 
 tabix++: tabix.o main.cpp $(HTS_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ main.cpp tabix.o $(INCLUDES) $(LIBPATH) $(LIBS)
+	$(CXX) $(LDFLAGS) $(CPPFLAGS) $(CXXFLAGS) -o $@ main.cpp tabix.o $(INCLUDES) $(LIBPATH) $(LIBS)
 
 cleanlocal:
 	rm -fr gmon.out *.o a.out *.dSYM $(PROG) *~ *.a tabix.aux tabix.log \
