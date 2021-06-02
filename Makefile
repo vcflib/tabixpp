@@ -8,7 +8,7 @@ INCLUDES?=	-Ihtslib
 HTS_HEADERS?=	htslib/htslib/bgzf.h htslib/htslib/tbx.h
 HTS_LIB?=	htslib/libhts.a
 LIBPATH?=	-L. -Lhtslib
-LIBS?=	-lhts -lpthread -lm -lbz2 -llzma -lz
+LIBS?=	-lhts -lpthread -lm -lbz2 -lcurl -llzma -lz
 DFLAGS=		-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
 PROG=		tabix++
 SUBDIRS=.
