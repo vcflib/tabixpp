@@ -12,7 +12,15 @@ Tabix::Tabix(string& file) {
     struct stat stat_tbi,stat_vcf;
     char *fnidx = (char*) calloc(strlen(cfilename) + 5, 1);
     strcat(strcpy(fnidx, cfilename), ".tbi");
-    if ( bgzf_is_bgzf(cfilename)!=1 )
+
+    hFILE *fp = hopen(cfilename, "r");
+    if (fp == NULL) {
+      cerr << "can't open " << cfilename;
+      return;
+    }
+
+    htsFormat fmt;
+    if ( hts_detect_format(fp,&fmt)!=1 )
     {
         cerr << "[tabix++] was bgzip used to compress this file? " << file << endl;
         free(fnidx);
@@ -117,11 +125,11 @@ bool Tabix::getNextLine(string& line) {
 
 bool Tabix::getNextLineKS() {
     if (has_jumped) {
-        if (iter && 
+        if (iter &&
 	    tbx_itr_next(fn, tbx, iter, &str) >= 0) {
             //line = &str;
             return true;
-        } else 
+        } else
 	    return false;
     } else { // step through all sequences in the file
         // we've never jumped, so read everything

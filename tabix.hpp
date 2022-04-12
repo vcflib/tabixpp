@@ -4,6 +4,7 @@
 #include "htslib/bgzf.h"
 #include "htslib/tbx.h"
 #include "htslib/kseq.h"
+#include "htslib/hfile.h"
 #include <iostream>
 #include <cstring>
 #include <vector>
