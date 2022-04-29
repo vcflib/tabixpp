@@ -14,6 +14,7 @@
 ;;
 ;;   guix shell -C -D -f guix.scm -- bash --init-file <(echo "mkdir -p /usr/bin && ln -s \$GUIX_ENVIRONMENT/bin/env /usr/bin/env")
 ;;
+;;   make CC=gcc -j 16
 
 (use-modules
   ((guix licenses) #:prefix license:)
@@ -56,8 +57,7 @@
     (build-system cmake-build-system)
     (inputs
      `(("curl" ,curl)
-       ("fastahack" ,fastahack)
-       ("gcc" ,gcc-9)    ;; test
+       ("gcc" ,gcc-11)    ;; test
        ("gdb" ,gdb)
        ;; ("htslib" ,htslib)
        ;; ("tabixpp" ,tabixpp)
