@@ -26,6 +26,7 @@ Tabix::Tabix(string& file) {
         free(fnidx);
         exit(1);
     }
+    hclose(fp);
     // Common source of errors: new VCF is used with an old index
     stat(fnidx, &stat_tbi);
     stat(cfilename, &stat_vcf);
