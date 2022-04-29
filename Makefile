@@ -8,7 +8,7 @@
 # FreeBSD ports, MacPorts, pkgsrc, etc.)
 
 CC ?=		cc
-CXX ?= 		c++
+CXX ?=		c++
 CXXFLAGS ?=	-g -Wall -O2 #-m64 #-arch ppc
 CXXFLAGS +=	-fPIC
 INCLUDES ?=	-Ihtslib
@@ -20,16 +20,27 @@ DESTDIR ?=	stage
 PREFIX ?=	/usr/local
 STRIP ?=	strip
 INSTALL ?=	install -c
+LN_S ?=		ln -s
 MKDIR ?=	mkdir -p
 AR ?=		ar
 
 DFLAGS =	-D_FILE_OFFSET_BITS=64 -D_USE_KNETFILE
 BIN =		tabix++
-LIB =		libtabix.a
+LIB =		libtabixpp.a
 SOVERSION =	1
-SLIB =		libtabix.so.$(SOVERSION)
+SLIB =		libtabixpp.so.$(SOVERSION)
 OBJS =		tabix.o
 SUBDIRS =	.
+
+COMPILER_VERSION := $(shell $(CXX) --version)
+ifneq '' '$(findstring clang,$(COMPILER_VERSION))'
+  SONAME_ARG ?= "-install_name"
+else ifneq '' '$(findstring g++,$(COMPILER_VERSION))'
+  SONAME_ARG ?= "-soname"
+else
+  $(warning Unknown compiler)
+  SONAME_ARG ?= "-soname"
+endif
 
 .SUFFIXES:.c .o
 
@@ -47,7 +58,7 @@ all-recur lib-recur clean-recur cleanlocal-recur install-recur:
 		cd $$wdir; \
 	done;
 
-all:	$(BIN) $(LIB) $(SLIB)
+all: $(BIN) $(LIB) $(SLIB)
 
 tabix.o: $(HTS_HEADERS) tabix.cpp tabix.hpp
 	$(CXX) $(CXXFLAGS) -c tabix.cpp $(INCLUDES)
@@ -59,7 +70,8 @@ $(LIB): $(OBJS)
 	$(AR) rs $(LIB) $(OBJS)
 
 $(SLIB): $(OBJS)
-	$(CXX) -shared -Wl,-soname,$(SLIB) -o $(SLIB) $(OBJS)
+	$(CXX) $(CXXFLAGS) -shared -Wl,$(SONAME_ARG),$(SLIB) -o $(SLIB) $(OBJS) \
+		$(INCLUDES) $(LIBPATH) -lhts -lpthread -lm -lz -lcurl -llzma -lbz2
 
 tabix++: $(OBJS) main.cpp $(HTS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ main.cpp $(OBJS) $(INCLUDES) $(LIBPATH) \
@@ -82,7 +94,7 @@ install-strip: install
 cleanlocal:
 	rm -rf $(BIN) $(LIB) $(SLIB) $(OBJS) $(DESTDIR)
 	rm -fr gmon.out *.o a.out *.dSYM $(BIN) *~ *.a tabix.aux tabix.log \
-		tabix.pdf *.class libtabix.*.dylib
+		tabix.pdf *.class libtabixpp.*.so libtabixpp.*.dylib
 	cd htslib && $(MAKE) clean
 
-clean:	cleanlocal-recur
+clean: cleanlocal-recur
