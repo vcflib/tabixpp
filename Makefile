@@ -65,6 +65,9 @@ tabix++: $(OBJS) main.cpp $(HTS_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ main.cpp $(OBJS) $(INCLUDES) $(LIBPATH) \
 		-lhts -lpthread -lm -lz -lcurl -llzma -lbz2
 
+test: all
+	./tabix++ test/vcf_file.vcf.gz
+
 install: all
 	$(MKDIR) $(DESTDIR)$(PREFIX)/bin
 	$(MKDIR) $(DESTDIR)$(PREFIX)/include

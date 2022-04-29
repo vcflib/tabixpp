@@ -5,6 +5,7 @@ This is a C++ wrapper around [tabix project](http://samtools.sourceforge.net/tab
 ```sh
 git submodule update --init --recursive
 make CC=gcc -j 16
+make test
 ```
 
 See also [guix.scm](./guix.scm) for the build environment we test with.

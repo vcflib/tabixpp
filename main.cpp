@@ -3,13 +3,16 @@
 
 using namespace std;
 
+const string VERSION = "1.1.1";
+
 int main(int argc, char** argv) {
 
     if (argc < 2) {
-        cerr << argv[0] << " [file] [ [region] ... ]" << endl
+        cout << argv[0] << " [file] [ [region] ... ]" << endl
              << "Writes out regions from bgzf-compressed, tabix-indexed file." << endl
              << "Supply 'header' to print out the header, and no regions to" << endl
-             << "print the contents of the entire file." << endl;
+             << "print the contents of the entire file." << endl << endl
+             << "Version " << VERSION << endl;
         return 1;
     }
 
@@ -22,7 +25,7 @@ int main(int argc, char** argv) {
     Tabix file(filename);
 
     if (!regions.empty()) {
-        for (vector<string>::iterator r = regions.begin(); r != regions.end(); ++r) { 
+        for (vector<string>::iterator r = regions.begin(); r != regions.end(); ++r) {
             string& region = *r;
             if (region == "header") {
                 string header;

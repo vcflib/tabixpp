@@ -13,26 +13,31 @@ Tabix::Tabix(string& file) {
     char *fnidx = (char*) calloc(strlen(cfilename) + 5, 1);
     strcat(strcpy(fnidx, cfilename), ".tbi");
 
-    hFILE *fp = hopen(cfilename, "r");
-    if (fp == NULL) {
+    hFILE *fp;
+    if (!(fp = hopen(cfilename, "r"))) {
       cerr << "can't open " << cfilename;
       return;
     }
 
     htsFormat fmt;
-    if ( hts_detect_format(fp,&fmt)!=1 )
+    if ( hts_detect_format(fp,&fmt) < 0 )
     {
         cerr << "[tabix++] was bgzip used to compress this file? " << file << endl;
         free(fnidx);
         exit(1);
     }
-    hclose(fp);
+    if (hclose(fp) != 0) {
+        cerr << "can't close " << cfilename;
+        return;
+    }
+
     // Common source of errors: new VCF is used with an old index
     stat(fnidx, &stat_tbi);
     stat(cfilename, &stat_vcf);
     if ( stat_vcf.st_mtime > stat_tbi.st_mtime )
     {
         cerr << "[tabix++] the index file is older than the vcf file. Please use '-f' to overwrite or reindex." << endl;
+
         free(fnidx);
         exit(1);
     }
