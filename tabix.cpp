@@ -72,6 +72,7 @@ Tabix::~Tabix(void) {
     tbx_itr_destroy(iter);
     tbx_destroy(tbx);
     free(str.s);
+    hts_close(fn);
 }
 
 const kstring_t * Tabix::getKstringPtr(){
